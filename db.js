@@ -1,8 +1,10 @@
 // db.js
+import dotenv from "dotenv";
+dotenv.config();
 import mysql from "mysql";
 import Redis from "ioredis";
 const redisClient = new Redis({
-  url: "redis://localhost:6379",
+  url: process.env.REDIS_URL,
 });
 
 console.log("connecting to redis");
@@ -14,10 +16,10 @@ redisClient.on("error", () => {
 });
 
 const connection = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "Shesha@007",
-  database: "shesha",
+  host: process.env.SQL_HOST,
+  user: process.env.SQL_USER,
+  password: process.env.SQL_PASSWORD,
+  database: process.env.SQL_DB,
 });
 
 connection.connect((err) => {

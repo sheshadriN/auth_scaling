@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use("/admin", adminAuth);
 
-app.listen(3000, () => {
-  console.log(`server is running http://localhost:3000`);
+import "./db.js";
+app.listen(process.env.PORT, () => {
+  console.log(`server is running http://localhost:${process.env.PORT}`);
 });

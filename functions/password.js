@@ -1,15 +1,16 @@
 // password.js
-import bcrypt from "bcrypt";
+import bcrypt, { hash } from "bcrypt";
 
 const hash_password = (password) => {
   try {
-    const salt = bcrypt.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(Number(process.env.SALT));
+
     const hashed = bcrypt.hashSync(password, salt);
+    console.log(salt + "==>> " + hashed);
     return hashed;
   } catch (error) {
     console.error(error);
-    throw new Error("Error hashing password");
   }
 };
 
-export default hash_password;
+export default { hash_password };

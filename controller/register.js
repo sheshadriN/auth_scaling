@@ -1,5 +1,5 @@
 // register.js
-import hash_password from "../functions/password.js";
+import hash from "../functions/password.js";
 import joi from "joi";
 import db from "../db.js";
 import otpGenerator from "otp-generator";
@@ -36,14 +36,21 @@ const RegisterOtp = async (req, res) => {
         lowerCaseAlphabets: false,
         specialChars: false,
       });
-      db.redisClient.set(email, otp, "EX", 300, (err) => {
-        if (err) {
-          console.log("error on setting key " + err);
+
+      db.redisClient.set(
+        email,
+        otp,
+        "EX",
+        process.env.OTP_VALID_TIME,
+        (err) => {
+          if (err) {
+            console.log("error on setting key " + err);
+          }
+          console.log(
+            `key set successfully key: ${email} and exipreTime 300 seconds`
+          );
         }
-        console.log(
-          `key set successfully key: ${email} and exipreTime 300 seconds`
-        );
-      });
+      );
       res.status(200).send({ message: "otp send" });
     });
   } catch (err) {
