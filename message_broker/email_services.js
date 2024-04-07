@@ -3,7 +3,7 @@ import sendEmail from "../functions/mail.js";
 import fs from "fs";
 
 const htmlTemplate = fs.readFileSync(
-  "/home/shesha/Desktop/SQL/message_broker/otp_mail.html",
+  "./message_broker/otp_mail.html",
   "utf8"
 );
 

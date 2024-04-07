@@ -4,7 +4,7 @@ dotenv.config();
 import mysql from "mysql";
 import Redis from "ioredis";
 const redisClient = new Redis({
-  url: process.env.REDIS_URL,
+  url: "hello",
 });
 
 console.log("connecting to redis");
