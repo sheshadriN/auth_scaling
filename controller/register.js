@@ -3,6 +3,7 @@ import hash from "../functions/password.js";
 import joi from "joi";
 import db from "../db.js";
 import otpGenerator from "otp-generator";
+import connectRabbitmq from "../message_broker/email_services.js";
 
 const schema = joi.object({
   email: joi.string().email().required(),
@@ -11,15 +12,15 @@ const schema = joi.object({
 const RegisterOtp = async (req, res) => {
   const { email } = req.body;
 
-  const { error, value } = await schema.validate({ email });
+  const { error, value } = schema.validate({ email });
   if (error) {
     res.status(400).send({ message: "Invalid format" });
     return;
   }
 
   try {
-    const already_user = `SELECT * FROM users WHERE email = ?`;
-    db.connection.query(already_user, [email], (err, rows) => {
+    const query = `SELECT * FROM users WHERE email = ?`;
+    db.connection.query(query, [email], (err, rows) => {
       if (err) {
         console.error(err);
         res.status(500).send({ message: "Internal server error" });
@@ -37,6 +38,8 @@ const RegisterOtp = async (req, res) => {
         specialChars: false,
       });
 
+      connectRabbitmq(email, otp);
+
       db.redisClient.set(
         email,
         otp,
@@ -51,7 +54,7 @@ const RegisterOtp = async (req, res) => {
           );
         }
       );
-      res.status(200).send({ message: "otp send" });
+      res.status(200).send({ message: "mail send successfully" });
     });
   } catch (err) {
     console.error(err);
