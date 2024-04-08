@@ -30,8 +30,8 @@ connection.connect((err) => {
   console.log("Connected to MySQL server");
   const create_table = `CREATE TABLE IF NOT EXISTS users(
           id INT AUTO_INCREMENT PRIMARY Key,
-          username varChar(30) not null,
-          email varChar(20) not null,
+          username varChar(255) not null,
+          email varChar(255) not null,
           password varChar(255) not null)`;
   connection.query(create_table, (err, result) => {
     if (err) {

@@ -1,8 +1,9 @@
 import express from "express";
-import RegisterOtp from "../controller/register.js";
+import register from "../controller/register.js";
 
 const router = express.Router();
 
-router.post("/RegisterOtp", RegisterOtp);
+router.post("/getOtp", register.getOtp);
+router.post("/register",register.register)
 
 export default router;

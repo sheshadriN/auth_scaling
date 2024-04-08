@@ -4,15 +4,24 @@ import joi from "joi";
 import db from "../db.js";
 import otpGenerator from "otp-generator";
 import connectRabbitmq from "../message_broker/email_services.js";
+import jwt from '../functions/jwt.js'
 
-const schema = joi.object({
+
+
+const otpSchema = joi.object({
   email: joi.string().email().required(),
 });
+const registerSchema = joi.object({
+  email:joi.string().email().required(),
+  username:joi.string().required(),
+  password:joi.string().required(),
+  otp:joi.string().required()
+})
 
-const RegisterOtp = async (req, res) => {
+const getOtp = async (req, res) => {
   const { email } = req.body;
 
-  const { error, value } = schema.validate({ email });
+  const { error, value } = otpSchema.validate({ email });
   if (error) {
     res.status(400).send({ message: "Invalid format" });
     return;
@@ -62,4 +71,42 @@ const RegisterOtp = async (req, res) => {
   }
 };
 
-export default RegisterOtp;
+const register = async (req, res) => {
+  console.log(req.body);
+  const { error, value } = registerSchema.validate(req.body);
+  if (error) {
+    res.status(400).send({ message: "Invalid format" });
+    return;
+  }
+
+  try {
+    const check = await db.redisClient.get(value.email);
+    if (check === value.otp) {
+      
+      value.password = hash.hash_password(value.password);
+      const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+      db.connection.query(query, [value.username, value.email, value.password], (error, rows) => {
+        if (error) {
+          res.status(500).send({ message: "Internal server error" ,error:error.message});
+          return;
+        }
+        const token = jwt.createToken(rows.InsertId);
+        console.log(token);
+        db.redisClient.del(value.email);
+        res.status(200).send({ message: "User registered successfully" ,token:token});
+      });
+
+    } else {
+      res.status(400).send({ message: "Invalid OTP" });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+
+
+
+
+export default {getOtp,register};
