@@ -1,21 +1,23 @@
-version: '3.8'
+version: '3.7'
 
 services:
-  mysql:
-    image: mysql:8.3.0
-    command: --default-authentication-plugin=mysql_native_password
-    container_name: mysql
-    ports:
-      - "3307:3306"
-    volumes: 
-      - sql_volume:/var/lib/mysql
-      - ./mysql-init-files:/docker-entrypoint-initdb.d
+ mysql:
+    image: mysql:5.7
+    container_name: mysql-5.7
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "Shesha@007"
-      MYSQL_DATABASE: "shesha"
-    restart: on-failure
+      MYSQL_DATABASE: 'shesha'
+      MYSQL_USER: 'sample'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - mysql-db:/var/lib/mysql
 
-  redis:
+ redis:
     image: redis:alpine
     container_name: redis
     ports:
@@ -23,7 +25,7 @@ services:
     volumes:
       - redis_volume:/data
 
-  auth:
+ auth:
     build: ./auth_scaling
     container_name: auth
     ports:
@@ -32,9 +34,9 @@ services:
       - SALT=10
       - OTP_VALID_TIME=300
       - REDIS_HOST=redis
-      - SQL_HOST=mysql
+      - SQL_HOST=mysql    # Connect to the MySQL service using its container name
       - SQL_USER=root
-      - SQL_PASSWORD=Shesha@007
+      - SQL_PASSWORD=password
       - SQL_DB=shesha
       - PORT=7000
       - EMAIL=covaitraveller@gmail.com
@@ -43,8 +45,8 @@ services:
     depends_on:
       - mysql
       - redis
-    restart: on-failure
+    command: ["/bin/sh", "-c", "while ! nc -z mysql 3306; do sleep 1; done; npm start"]  
 
 volumes:
-  sql_volume:
-  redis_volume:
+ mysql-db:
+ redis_volume:
