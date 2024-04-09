@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.3.0
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    volumes: 
+      - sql_volume:/var/lib/mysql
+      - ./mysql-init-files:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: "Shesha@007"
+      MYSQL_DATABASE: "shesha"
+    restart: on-failure
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_volume:/data
+
+  auth:
+    build: ./auth_scaling
+    container_name: auth
+    ports:
+      - "4000:7000"
+    environment:
+      - SALT=10
+      - OTP_VALID_TIME=300
+      - REDIS_HOST=redis
+      - SQL_HOST=mysql
+      - SQL_USER=root
+      - SQL_PASSWORD=Shesha@007
+      - SQL_DB=shesha
+      - PORT=7000
+      - EMAIL=covaitraveller@gmail.com
+      - PASSWORD="ghzn uprx hzdt xohh"
+      - SECRET="qwertyuiopasdfghjklzxrtyuioasdfghjpasdfghjklzxcvbnmwertyuioasdfghjnmwertyuioasdfghj"
+    depends_on:
+      - mysql
+      - redis
+    restart: on-failure
+
+volumes:
+  sql_volume:
+  redis_volume:
