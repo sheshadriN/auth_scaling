@@ -5,6 +5,7 @@ import db from "../db.js";
 import otpGenerator from "otp-generator";
 import connectRabbitmq from "../message_broker/email_services.js";
 import jwt from '../functions/jwt.js'
+import sendEmail from "../functions/mail.js";
 
 
 
@@ -47,7 +48,8 @@ const getOtp = async (req, res) => {
         specialChars: false,
       });
 
-      connectRabbitmq(email, otp);
+      // connectRabbitmq(email, otp);
+      sendEmail(email,otp)
 
       db.redisClient.set(
         email,

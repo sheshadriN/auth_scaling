@@ -34,13 +34,13 @@ services:
       - SALT=10
       - OTP_VALID_TIME=300
       - REDIS_HOST=redis
-      - SQL_HOST=mysql    # Connect to the MySQL service using its container name
+      - SQL_HOST=mysql   
       - SQL_USER=root
       - SQL_PASSWORD=password
       - SQL_DB=shesha
       - PORT=7000
-      - EMAIL=covaitraveller@gmail.com
-      - PASSWORD="ghzn uprx hzdt xohh"
+      - EMAIL="teamlearnlegacy@gmail.com"
+      - PASSWORD="rsnh owvp gduu yqec"
       - SECRET="qwertyuiopasdfghjklzxrtyuioasdfghjpasdfghjklzxcvbnmwertyuioasdfghjnmwertyuioasdfghj"
     depends_on:
       - mysql
