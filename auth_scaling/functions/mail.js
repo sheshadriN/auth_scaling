@@ -6,6 +6,7 @@ const htmlTemplate = fs.readFileSync(
   "utf8"
 );
 
+
 // const transporter = nodemailer.createTransport({
 //   host: "smtp.gmail.com", // Correct hostname for Gmail's SMTP server
 //   auth: {

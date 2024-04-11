@@ -7,3 +7,6 @@ router.post("/getOtp", register.getOtp);
 router.post("/register",register.register)
 
 export default router;
+
+
+
