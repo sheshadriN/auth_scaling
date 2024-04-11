@@ -45,7 +45,7 @@ const getOtp = async (req, res) => {
       const otp = otpGenerator.generate(4, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
-        specialChars: false,
+        specialChars: false
       });
 
       // connectRabbitmq(email, otp);
@@ -74,7 +74,7 @@ const getOtp = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { error, value } = registerSchema.validate(req.body);
   if (error) {
     res.status(400).send({ message: "Invalid format" });
@@ -92,8 +92,14 @@ const register = async (req, res) => {
           res.status(500).send({ message: "Internal server error" ,error:error.message});
           return;
         }
-        const token = jwt.createToken(rows.InsertId);
-        console.log(token);
+        // console.log(rows.insertId);
+        const payload = {
+          id:rows.insertId,
+          role:"ADMIN"
+        }
+        // console.log(payload);
+        const token = jwt.createToken(payload);
+        // console.log(token);
         db.redisClient.del(value.email);
         res.status(200).send({ message: "User registered successfully" ,token:token});
       });
